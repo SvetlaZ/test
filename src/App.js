@@ -1,9 +1,12 @@
 import React from 'react';
+import Meal from '../src/conteiners/Meal/Meal';
 
 function App() {
   return (
     <div>
-      <p>Hello</p>
+      <Meal />
+      <Meal />
+      <Meal />
     </div>
   );
 }
