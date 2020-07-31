@@ -1,12 +1,10 @@
 import React from 'react';
-import Meal from '../src/conteiners/Meal/Meal';
+import MealList from '../src/conteiners/MealList/MealList';
 
 function App() {
   return (
     <div>
-      <Meal />
-      <Meal />
-      <Meal />
+      <MealList />
     </div>
   );
 }
