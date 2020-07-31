@@ -4,7 +4,8 @@ import MealWrapper from './MealWrapper';
 const Meal = ({
   name,
   src,
-  price
+  price,
+  weight
 }) => {
   return (
     <MealWrapper>
@@ -13,10 +14,13 @@ const Meal = ({
       </div>
       <div className="meal-info">
         <div className="meal-info__description">
-          <h3>{name}</h3>
+          <h3>
+            {name}
+            <span>{` ${weight} г`}</span>
+          </h3>
         </div>
         <div className="meal-info__price">
-          <p>{price}</p>
+          <p>{`${price} ₽`}</p>
         </div>
       </div>
     </MealWrapper>

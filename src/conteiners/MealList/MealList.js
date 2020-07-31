@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Meal from '../Meal/Meal'
 import MealListWrapper from './MealListWrapper';
 import axios from 'axios';
@@ -26,20 +26,38 @@ const mealArr = [
 ]
 
 const MealList = () => {
+
+  const [meals, setMeals] = useState([]);
+
   useEffect(() => {
-    axios.get('https://gotovo-test-9f899.firebaseio.com/meal.json')
-      .then(response => {
-        console.log(response);
-      })
+    async function fetchData() {
+      try {
+        const responce = await axios.get('https://gotovo-test-9f899.firebaseio.com/meals.json');
+        const meals = [];
+        console.log('resp: ', responce.data)
+        for (let mealId in responce.data) {
+          meals.push({
+            id: mealId,
+            ...responce.data[mealId]
+          })
+        }
+        console.log('meals: ', meals)
+        setMeals(meals);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    fetchData();
   }, []);
 
   return (
     <MealListWrapper>
-      {mealArr.map(({ name, src, price }, index) => {
+      {meals.map(({ name, photo, price, id, weight }) => {
         return <Meal
-          key={index}
+          key={id}
           name={name}
-          src={src}
+          src={photo}
+          weight={weight}
           price={price}
         />
       })}

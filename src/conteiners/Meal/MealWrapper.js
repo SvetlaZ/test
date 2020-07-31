@@ -13,6 +13,15 @@ const MealWrapper = styled.div`
     }  
   }
 
+  h3 {
+    span {
+      font-size: 13px;
+      line-height: 15px;
+      color: rgb(196, 196, 196);
+      margin-left: 4px;
+    }
+  }
+
   .meal-info__price {
     p {
       color: rgb(196,196,196);

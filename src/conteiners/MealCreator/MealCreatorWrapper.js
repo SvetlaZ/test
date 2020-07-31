@@ -13,10 +13,10 @@ const MealCreatorWrapper = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-width: 300px;
+    // min-width: 300px;
     border: 3px solid #cecece;
     border-radius: 25px;
-    width: 400px;
+    // width: 400px;
     padding: 30px;
 
     h2 {

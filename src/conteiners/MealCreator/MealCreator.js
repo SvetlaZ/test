@@ -3,23 +3,32 @@ import axios from 'axios';
 import MealCreatorWrapper from './MealCreatorWrapper';
 
 const MealCreator = () => {
+  const [category, setCategory] = useState('Завтрак');
   const [name, setName] = useState('');
   const [weight, setWeight] = useState('');
   const [price, setPrice] = useState('');
+  const [photo, setPhoto] = useState('');
+
+  const ref = React.createRef();
 
   const createMealHandler = useCallback((event) => {
     event.preventDefault();
 
     axios.post('https://gotovo-test-9f899.firebaseio.com/meals.json', {
+      'category': category,
       'name': name,
-      'weigth': weight,
-      'price': price
+      'weight': weight,
+      'price': price,
+      'photo': ref.current.value,
     })
       .then(response => {
-        console.log(response)
+        console.log(response);
+        setCategory('Завтрак');
+        setName('');
+        setWeight('');
+        setPrice('');
       })
-      .catch(error => console.log(error))
-      ;
+      .catch(error => console.log(error));
 
     console.log(name);
     console.log('создаем блюдо');
@@ -32,11 +41,11 @@ const MealCreator = () => {
 
         <form className="form-create">
 
-          <label><p>Выберете категорию:</p></label>
-          <select>
-            <option value="breakfast">Завтрак</option>
-            <option value="lunch">Обед</option>
-            <option value="dinner">Ужин</option>
+          <label htmlFor="select"><p>Выберете категорию:</p></label>
+          <select value={category} id="select" onChange={(event) => setCategory(event.target.value)}>
+            <option value="Завтрак">Завтрак</option>
+            <option value="Обед">Обед</option>
+            <option value="Ужин">Ужин</option>
           </select>
 
 
@@ -50,8 +59,9 @@ const MealCreator = () => {
             className="form-create-input"
           />
 
-          <label><p>Введите вес:</p></label>
+          <label htmlFor="weight"><p>Введите вес в граммах:</p></label>
           <input
+            id="weight"
             type="text"
             placeholder="Вес"
             value={weight}
@@ -59,8 +69,9 @@ const MealCreator = () => {
             className="form-create-input"
           />
 
-          <label><p>Введите цену:</p></label>
+          <label htmlFor="price"><p>Введите цену в рублях:</p></label>
           <input
+            id="price"
             type="text"
             placeholder="Цена"
             value={price}
@@ -68,7 +79,14 @@ const MealCreator = () => {
             className="form-create-input"
           />
 
-          <p>Загузите фото</p>
+          <label htmlFor="photo"><p>Загрузите фото: </p></label>
+          <input
+            id="photo"
+            type="hidden"
+            role="uploadcare-uploader"
+            name="photo"
+            ref={ref}
+          />
 
           <button
             onClick={createMealHandler}
