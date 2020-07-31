@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Meal from '../Meal/Meal'
 import MealListWrapper from './MealListWrapper';
+import axios from 'axios';
 
 import croissant from './croissant.png';
 import rozan from './rozan.png';
@@ -25,6 +26,13 @@ const mealArr = [
 ]
 
 const MealList = () => {
+  useEffect(() => {
+    axios.get('https://gotovo-test-9f899.firebaseio.com/meal.json')
+      .then(response => {
+        console.log(response);
+      })
+  }, []);
+
   return (
     <MealListWrapper>
       {mealArr.map(({ name, src, price }, index) => {
