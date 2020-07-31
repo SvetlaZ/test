@@ -1,20 +1,42 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import * as firebase from 'firebase';
 import AuthWrapper from './AuthWrapper'
 
 const Auth = () => {
   const [tel, setTel] = useState('');
   const [code, setCode] = useState('');
+  const [res, setRes] = useState('');
 
   const getCodeHandler = useCallback((event) => {
     event.preventDefault();
     console.log('Получить код')
-  }, []);
+    var appVerifier = window.recaptchaVerifier;
+    firebase.auth().signInWithPhoneNumber(tel, appVerifier)
+      .then(function (confirmationResult) {
+        // SMS sent. Prompt user to type the code from the message, then sign the
+        // user in with confirmationResult.confirm(code).
+        window.confirmationResult = confirmationResult;
+        setRes(confirmationResult);
+        console.log('confirmationResult: ', res)
+      }).catch(function (error) {
+        console.log(error);
+        // grecaptcha.reset(window.recaptchaWidgetId);
+      });
+  }, [tel]);
 
   const sendCodeHandler = useCallback((event) => {
     event.preventDefault();
     console.log('Отправить код')
-  }, []);
+    res.confirm(code).then(function (result) {
+      // User signed in successfully.
+      var user = result.user;
+      console.log(user)
+      // ...
+    }).catch(function (error) {
+      // User couldn't sign in (bad verification code?)
+      // ...
+    });
+  }, [code]);
 
   useEffect(() => {
     if (!firebase.apps.length) {
@@ -44,8 +66,9 @@ const Auth = () => {
         <h2>Авторизация</h2>
 
         <form className="form-auth">
-          <label>Введите действующий номер телефона</label>
+          <label htmlFor="tel">Введите действующий номер телефона</label>
           <input
+            id="tel"
             type="tel"
             placeholder="+79995555555"
             pattern='/+7[0-9]{3}[0-9][0-9]{2}/'
@@ -63,10 +86,11 @@ const Auth = () => {
         </form>
 
         <form className="form-auth">
-          <label>Введите полученный код</label>
+          <label htmlFor="code">Введите полученный код</label>
           <input
+            id="code"
             type="number"
-            placeholder="5555"
+            placeholder="123456"
             value={code}
             className="form-auth-input"
             onChange={(event) => setCode(event.target.value)}
@@ -75,7 +99,7 @@ const Auth = () => {
             className="btn-code"
             onClick={sendCodeHandler}
           >
-            Прислать код
+            Отправить
           </button>
         </form>
       </div>
