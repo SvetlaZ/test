@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import * as firebase from 'firebase';
-import AuthWrapper from './AuthWrapper'
+import { Redirect } from 'react-router-dom';
+import AuthWrapper from './AuthWrapper';
 
 const Auth = () => {
   const [tel, setTel] = useState('');
@@ -34,7 +35,7 @@ const Auth = () => {
       // User signed in successfully.
       var user = result.user;
       console.log(user)
-      // ...
+      localStorage.setItem('userId', user.uid);
     }).catch(function (error) {
       // User couldn't sign in (bad verification code?)
       // ...
@@ -87,6 +88,9 @@ const Auth = () => {
               >
                 Отправить
               </button>
+              {
+                localStorage.getItem('userId') ? <Redirect to='/' /> : false
+              }
             </form>
             :
             <form className="form-auth">

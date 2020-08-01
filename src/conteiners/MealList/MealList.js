@@ -1,29 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import Meal from '../Meal/Meal'
+import React, { useEffect, useState, useCallback } from 'react';
+import Meal from '../Meal/Meal';
+import { Link } from 'react-router-dom';
 import MealListWrapper from './MealListWrapper';
 import axios from 'axios';
-
-import croissant from './croissant.png';
-import rozan from './rozan.png';
-import bun from './bun.png';
-
-const mealArr = [
-  {
-    'name': 'Большой миндальный круассан',
-    'src': croissant,
-    'price': '145 ₽'
-  },
-  {
-    'name': 'Слоенный розан с малиной',
-    'src': rozan,
-    'price': '105 ₽'
-  },
-  {
-    'name': 'Улитка с корицей',
-    'src': bun,
-    'price': '100 ₽'
-  },
-]
 
 const MealList = () => {
 
@@ -50,8 +29,35 @@ const MealList = () => {
     fetchData();
   }, []);
 
+  const authHandler = useCallback((event) => {
+    event.preventDefault();
+    console.log('Авторизируемся');
+  }, []);
+
   return (
     <MealListWrapper>
+      {
+        localStorage.getItem('userId')
+          ?
+          <div className="doWrap">
+            <p>Добавте свое блюдо</p>
+            <Link
+              to="/create"
+            >
+              <div className="btn">Добавить</div>
+            </Link>
+          </div>
+          :
+          <div className="doWrap">
+            <p>Чтобы добавлять блюда, необходимо войти</p>
+            <Link
+              to="/auth"
+            >
+              <div className="btn">Войти</div>
+            </Link>
+          </div>
+      }
+
       <div className="wrapperList">
         {meals.map(({ name, photo, price, id, weight }) => {
           return <Meal

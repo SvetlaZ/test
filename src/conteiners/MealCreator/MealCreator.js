@@ -1,38 +1,69 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import MealCreatorWrapper from './MealCreatorWrapper';
+import * as firebase from 'firebase';
+
+async function getToken() {
+  const token = await firebase.auth().currentUser.getIdToken(true);
+  console.log('token', token)
+  return token;
+}
 
 const MealCreator = () => {
   const [category, setCategory] = useState('Завтрак');
   const [name, setName] = useState('');
   const [weight, setWeight] = useState('');
   const [price, setPrice] = useState('');
-  const [photo, setPhoto] = useState('');
 
   const ref = React.createRef();
 
   const createMealHandler = useCallback((event) => {
     event.preventDefault();
 
-    axios.post('https://gotovo-test-9f899.firebaseio.com/meals.json', {
-      'category': category,
-      'name': name,
-      'weight': weight,
-      'price': price,
-      'photo': ref.current.value,
-    })
-      .then(response => {
-        console.log(response);
-        setCategory('Завтрак');
-        setName('');
-        setWeight('');
-        setPrice('');
-      })
-      .catch(error => console.log(error));
+    const jwtToken = firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        user.getIdToken().then(function (idToken) {
+          axios.post(`https://gotovo-test-9f899.firebaseio.com/meals.json?auth=${idToken}`, {
+            'category': category,
+            'name': name,
+            'weight': weight,
+            'price': price,
+            'photo': ref.current.value,
+          })
+            .then(response => {
+              console.log(response);
+              setCategory('Завтрак');
+              setName('');
+              setWeight('');
+              setPrice('');
+            })
+            .catch(error => console.log(error));
+        });
+      }
+    });
+
+    jwtToken();
 
     console.log(name);
     console.log('создаем блюдо');
   }, [name, weight, price]);
+
+  useEffect(() => {
+    if (!firebase.apps.length) {
+      let firebaseConfig = {
+        apiKey: "AIzaSyBqxC7p9MXNBgFXpSuSUicsMFwhYVZXx6o",
+        authDomain: "gotovo-test-9f899.firebaseapp.com",
+        databaseURL: "https://gotovo-test-9f899.firebaseio.com",
+        projectId: "gotovo-test-9f899",
+        storageBucket: "gotovo-test-9f899.appspot.com",
+        messagingSenderId: "315153781152",
+        appId: "1:315153781152:web:634ce87b79d732a01f94c5"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      firebase.auth().languageCode = 'en';
+    }
+  }, []);
 
   return (
     <MealCreatorWrapper>
