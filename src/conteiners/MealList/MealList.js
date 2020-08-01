@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Meal from '../Meal/Meal';
@@ -6,7 +6,6 @@ import Title from '../Title/Title';
 import MealListWrapper from './MealListWrapper';
 
 const MealList = () => {
-
   const [meals, setMeals] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -42,11 +41,6 @@ const MealList = () => {
     fetchData();
   }, []);
 
-  const authHandler = useCallback((event) => {
-    event.preventDefault();
-    console.log('Авторизируемся');
-  }, []);
-
   return (
     <MealListWrapper>
       {
@@ -73,7 +67,6 @@ const MealList = () => {
 
       <div className="wrapperList">
         {categories.map(({ title, id }) => {
-          // let item = [`${title}`];
           let item = [
             <Title
               key={id}

@@ -4,20 +4,17 @@ import MealCreatorWrapper from './MealCreatorWrapper';
 import { Redirect } from 'react-router-dom';
 import * as firebase from 'firebase';
 
-async function getToken() {
-  const token = await firebase.auth().currentUser.getIdToken(true);
-  console.log('token', token)
-  return token;
-}
-
 const MealCreator = () => {
-  const [category, setCategory] = useState('Завтрак');
+  const [category, setCategory] = useState(["breakfast"]);
   const [name, setName] = useState('');
   const [weight, setWeight] = useState('');
   const [price, setPrice] = useState('');
   const [isEdit, setIsEdit] = useState(false);
 
   const ref = React.createRef();
+
+  // eslint-disable-next-line
+  const role = "uploadcare-uploader";
 
   const createMealHandler = useCallback((event) => {
     event.preventDefault();
@@ -49,7 +46,7 @@ const MealCreator = () => {
 
     console.log(name);
     console.log('создаем блюдо');
-  }, [name, weight, price]);
+  }, [name, weight, price, category, ref]);
 
   useEffect(() => {
     if (!firebase.apps.length) {
@@ -121,7 +118,7 @@ const MealCreator = () => {
                 <input
                   id="photo"
                   type="hidden"
-                  role="uploadcare-uploader"
+                  role={role}
                   name="photo"
                   ref={ref}
                 />

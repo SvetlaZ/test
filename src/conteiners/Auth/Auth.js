@@ -20,7 +20,6 @@ const Auth = () => {
         // user in with confirmationResult.confirm(code).
         window.confirmationResult = confirmationResult;
         setRes(confirmationResult);
-        console.log('confirmationResult: ', res);
         setIsSentPhone(true);
       }).catch(function (error) {
         console.log(error);
@@ -30,18 +29,16 @@ const Auth = () => {
 
   const sendCodeHandler = useCallback((event) => {
     event.preventDefault();
-    console.log('Отправить код')
     res.confirm(code).then(function (result) {
       // User signed in successfully.
-      var user = result.user;
-      console.log(user)
+      const user = result.user;
       localStorage.setItem('userId', user.uid);
       setIsAuth(true);
     }).catch(function (error) {
       // User couldn't sign in (bad verification code?)
       // ...
     });
-  }, [code]);
+  }, [code, res]);
 
   useEffect(() => {
     if (!firebase.apps.length) {
