@@ -8,7 +8,7 @@ const Auth = () => {
   const [code, setCode] = useState('');
   const [res, setRes] = useState('');
   const [isSentPhone, setIsSentPhone] = useState(false);
-  const [isSentCode, setIsSentCode] = useState(false);
+  const [isAuth, setIsAuth] = useState(false);
 
   const getCodeHandler = useCallback((event) => {
     event.preventDefault();
@@ -36,6 +36,7 @@ const Auth = () => {
       var user = result.user;
       console.log(user)
       localStorage.setItem('userId', user.uid);
+      setIsAuth(true);
     }).catch(function (error) {
       // User couldn't sign in (bad verification code?)
       // ...
@@ -66,55 +67,58 @@ const Auth = () => {
 
   return (
     <AuthWrapper>
-      <div className="auth">
-        <h2>Авторизация</h2>
+      {
+        isAuth ?
+          (<Redirect to={"/"} />) :
+          (
+            <div className="auth">
+              <h2>Авторизация</h2>
 
-        {
-          isSentPhone
-            ?
-            <form className="form-auth">
-              <label htmlFor="code">Введите полученный код</label>
-              <input
-                id="code"
-                type="number"
-                placeholder="123456"
-                value={code}
-                className="form-auth-input"
-                onChange={(event) => setCode(event.target.value)}
-              />
-              <button
-                className="btn-code"
-                onClick={sendCodeHandler}
-              >
-                Отправить
-              </button>
               {
-                localStorage.getItem('userId') ? <Redirect to='/' /> : false
+                isSentPhone
+                  ?
+                  <form className="form-auth">
+                    < label htmlFor="code" > Введите полученный код</label >
+                    <input
+                      id="code"
+                      type="number"
+                      placeholder="123456"
+                      value={code}
+                      className="form-auth-input"
+                      onChange={(event) => setCode(event.target.value)}
+                    />
+                    <button
+                      className="btn-code"
+                      onClick={sendCodeHandler}
+                    >
+                      Отправить
+                    </button>
+                  </form >
+                  :
+                  <form className="form-auth">
+                    <label htmlFor="tel">Введите действующий номер телефона</label>
+                    <input
+                      id="tel"
+                      type="tel"
+                      placeholder="+79995555555"
+                      pattern='/+7[0-9]{3}[0-9][0-9]{2}/'
+                      value={tel}
+                      className="form-auth-input"
+                      onChange={(event) => setTel(event.target.value)}
+                    />
+                    <div id="recaptcha-container"></div>
+                    <button
+                      className="btn-auth"
+                      onClick={getCodeHandler}
+                    >
+                      Прислать код
+                    </button>
+                  </form>
               }
-            </form>
-            :
-            <form className="form-auth">
-              <label htmlFor="tel">Введите действующий номер телефона</label>
-              <input
-                id="tel"
-                type="tel"
-                placeholder="+79995555555"
-                pattern='/+7[0-9]{3}[0-9][0-9]{2}/'
-                value={tel}
-                className="form-auth-input"
-                onChange={(event) => setTel(event.target.value)}
-              />
-              <div id="recaptcha-container"></div>
-              <button
-                className="btn-auth"
-                onClick={getCodeHandler}
-              >
-                Прислать код
-              </button>
-            </form>
-        }
-      </div>
-    </AuthWrapper>
+            </div >
+          )
+      }
+    </AuthWrapper >
   )
 }
 

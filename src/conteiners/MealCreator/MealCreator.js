@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import MealCreatorWrapper from './MealCreatorWrapper';
+import { Redirect } from 'react-router-dom';
 import * as firebase from 'firebase';
 
 async function getToken() {
@@ -14,6 +15,7 @@ const MealCreator = () => {
   const [name, setName] = useState('');
   const [weight, setWeight] = useState('');
   const [price, setPrice] = useState('');
+  const [isEdit, setIsEdit] = useState(false);
 
   const ref = React.createRef();
 
@@ -24,7 +26,7 @@ const MealCreator = () => {
       if (user) {
         user.getIdToken().then(function (idToken) {
           axios.post(`https://gotovo-test-9f899.firebaseio.com/meals.json?auth=${idToken}`, {
-            'category': category,
+            'categories': JSON.stringify(category),
             'name': name,
             'weight': weight,
             'price': price,
@@ -32,10 +34,11 @@ const MealCreator = () => {
           })
             .then(response => {
               console.log(response);
-              setCategory('Завтрак');
+              setCategory(['Завтрак']);
               setName('');
               setWeight('');
               setPrice('');
+              setIsEdit(true);
             })
             .catch(error => console.log(error));
         });
@@ -67,66 +70,72 @@ const MealCreator = () => {
 
   return (
     <MealCreatorWrapper>
-      <div className="create">
-        <h2>Создание блюда</h2>
+      {
+        isEdit ?
+          (<Redirect to={"/"} />) :
+          (
+            <div className="create">
+              <h2>Создание блюда</h2>
 
-        <form className="form-create">
+              <form className="form-create">
 
-          <label htmlFor="select"><p>Выберете категорию:</p></label>
-          <select value={category} id="select" onChange={(event) => setCategory(event.target.value)}>
-            <option value="Завтрак">Завтрак</option>
-            <option value="Обед">Обед</option>
-            <option value="Ужин">Ужин</option>
-          </select>
+                <label htmlFor="select"><p>Выберете категорию:</p></label>
+                <select value={category} id="select" onChange={(event) => setCategory([event.target.value])}>
+                  <option value="breakfast">Завтрак</option>
+                  <option value="lunch">Обед</option>
+                  <option value="dinner">Ужин</option>
+                </select>
 
 
-          <label htmlFor="name"><p>Введите название:</p></label>
-          <input
-            id="name"
-            type="text"
-            placeholder="Название"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            className="form-create-input"
-          />
+                <label htmlFor="name"><p>Введите название:</p></label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Название"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  className="form-create-input"
+                />
 
-          <label htmlFor="weight"><p>Введите вес в граммах:</p></label>
-          <input
-            id="weight"
-            type="text"
-            placeholder="Вес"
-            value={weight}
-            onChange={(event) => setWeight(event.target.value)}
-            className="form-create-input"
-          />
+                <label htmlFor="weight"><p>Введите вес в граммах:</p></label>
+                <input
+                  id="weight"
+                  type="text"
+                  placeholder="Вес"
+                  value={weight}
+                  onChange={(event) => setWeight(event.target.value)}
+                  className="form-create-input"
+                />
 
-          <label htmlFor="price"><p>Введите цену в рублях:</p></label>
-          <input
-            id="price"
-            type="text"
-            placeholder="Цена"
-            value={price}
-            onChange={(event) => setPrice(event.target.value)}
-            className="form-create-input"
-          />
+                <label htmlFor="price"><p>Введите цену в рублях:</p></label>
+                <input
+                  id="price"
+                  type="text"
+                  placeholder="Цена"
+                  value={price}
+                  onChange={(event) => setPrice(event.target.value)}
+                  className="form-create-input"
+                />
 
-          <label htmlFor="photo"><p>Загрузите фото: </p></label>
-          <input
-            id="photo"
-            type="hidden"
-            role="uploadcare-uploader"
-            name="photo"
-            ref={ref}
-          />
+                <label htmlFor="photo"><p>Загрузите фото: </p></label>
+                <input
+                  id="photo"
+                  type="hidden"
+                  role="uploadcare-uploader"
+                  name="photo"
+                  ref={ref}
+                />
 
-          <button
-            onClick={createMealHandler}
-            className="btn-create"
-          >
-            Добавить блюдо
+                <button
+                  onClick={createMealHandler}
+                  className="btn-create"
+                >
+                  Добавить блюдо
             </button>
-        </form>
-      </div>
+              </form>
+            </div>
+          )
+      }
     </MealCreatorWrapper>
   )
 }

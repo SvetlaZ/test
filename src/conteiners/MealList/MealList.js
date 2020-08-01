@@ -1,23 +1,36 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import Meal from '../Meal/Meal';
 import { Link } from 'react-router-dom';
-import MealListWrapper from './MealListWrapper';
 import axios from 'axios';
+import Meal from '../Meal/Meal';
+import Title from '../Title/Title';
+import MealListWrapper from './MealListWrapper';
 
 const MealList = () => {
 
   const [meals, setMeals] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const responce = await axios.get('https://gotovo-test-9f899.firebaseio.com/meals.json');
+        const responceMeals = await axios.get('https://gotovo-test-9f899.firebaseio.com/meals.json');
+        const responceCategories = await axios.get('https://gotovo-test-9f899.firebaseio.com/categories.json');
+        console.log('responceCategories', responceCategories.data)
+        const categories = [];
+        for (let category in responceCategories.data) {
+          categories.push({
+            id: category,
+            ...responceCategories.data[category]
+          })
+        }
+        categories.sort((a, b) => a.order > b.order ? 1 : -1);
+        setCategories(categories);
         const meals = [];
-        console.log('resp: ', responce.data)
-        for (let mealId in responce.data) {
+        console.log('resp: ', responceMeals.data)
+        for (let mealId in responceMeals.data) {
           meals.push({
             id: mealId,
-            ...responce.data[mealId]
+            ...responceMeals.data[mealId]
           })
         }
         console.log('meals: ', meals)
@@ -59,14 +72,29 @@ const MealList = () => {
       }
 
       <div className="wrapperList">
-        {meals.map(({ name, photo, price, id, weight }) => {
-          return <Meal
-            key={id}
-            name={name}
-            src={photo}
-            weight={weight}
-            price={price}
-          />
+        {categories.map(({ title, id }) => {
+          // let item = [`${title}`];
+          let item = [
+            <Title
+              key={id}
+              title={title}
+            />];
+          item = item.concat(meals.filter(({ categories }) => {
+            if (categories) {
+              return categories.indexOf(id) !== -1 ? true : false;
+            }
+            return false;
+          }).map(({ name, photo, price, id, weight }) => {
+            return <Meal
+              key={id}
+              name={name}
+              src={photo}
+              weight={weight}
+              price={price}
+            />
+          }))
+
+          return item;
         })}
       </div>
     </MealListWrapper>
