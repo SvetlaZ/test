@@ -52,6 +52,7 @@ const AuthWrapper = styled.div`
     background-color: #cecece;
     color: #000;
     width: 95%;
+    margin-top: 10px;
   }
 
   .btn-auth:hover, .btn-code:hover {

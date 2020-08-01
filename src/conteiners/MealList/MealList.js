@@ -52,15 +52,17 @@ const MealList = () => {
 
   return (
     <MealListWrapper>
-      {meals.map(({ name, photo, price, id, weight }) => {
-        return <Meal
-          key={id}
-          name={name}
-          src={photo}
-          weight={weight}
-          price={price}
-        />
-      })}
+      <div className="wrapperList">
+        {meals.map(({ name, photo, price, id, weight }) => {
+          return <Meal
+            key={id}
+            name={name}
+            src={photo}
+            weight={weight}
+            price={price}
+          />
+        })}
+      </div>
     </MealListWrapper>
   )
 };

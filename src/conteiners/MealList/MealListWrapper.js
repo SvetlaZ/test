@@ -1,7 +1,12 @@
 import styled from 'styled-components';
 
 const MealListWrapper = styled.div`
-  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  .wrapperList {
+    max-width: 600px;
+  }
   `;
 
 export default MealListWrapper;
