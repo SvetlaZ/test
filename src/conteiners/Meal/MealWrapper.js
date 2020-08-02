@@ -13,6 +13,16 @@ const MealWrapper = styled.div`
     }  
   }
 
+  .pencil {
+    margin-left: 10px;
+    width: 20px;
+  }
+  
+  .pencil:hover {
+    cursor: pointer;
+  }
+      
+
   h3 {
     span {
       font-size: 13px;

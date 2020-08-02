@@ -80,10 +80,12 @@ const MealList = () => {
           }).map(({ name, photo, price, id, weight }) => {
             return <Meal
               key={id}
+              id={id}
               name={name}
               src={photo}
               weight={weight}
               price={price}
+              isAuth={!!localStorage.getItem('userId')}
             />
           }))
 

@@ -1,11 +1,16 @@
 import React from 'react';
+import { Link } from 'react-router-dom'
 import MealWrapper from './MealWrapper';
 
+import pencil from './pencil.svg';
+
 const Meal = ({
+  id,
   name,
   src,
   price,
-  weight
+  weight,
+  isAuth
 }) => {
   return (
     <MealWrapper>
@@ -17,6 +22,15 @@ const Meal = ({
           <h3>
             {name}
             <span>{` ${weight} г`}</span>
+            {
+              isAuth
+                ?
+                <Link to={`/edit/${id}`}>
+                  <img src={pencil} alt="edit" className="pencil" />
+                </Link>
+                :
+                false
+            }
           </h3>
         </div>
         <div className="meal-info__price">

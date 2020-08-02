@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
-import MealCreatorWrapper from './MealCreatorWrapper';
+import MealEditorWrapper from './MealEditorWrapper';
 import { Redirect } from 'react-router-dom';
 import * as firebase from 'firebase';
 
@@ -8,14 +8,34 @@ import * as firebase from 'firebase';
 //   return param.trim().length >= 3 ? true : false
 // }
 
-const MealCreator = () => {
+
+
+const MealEditor = ({ match: { params: { id } } }) => {
   const [category, setCategory] = useState('breakfast');
   const [name, setName] = useState('');
   const [weight, setWeight] = useState('');
   const [price, setPrice] = useState('');
-  const [isCreate, setIsCreate] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const ref = React.createRef();
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const id = '-MDfOAVpHst9RSoTi1_X';
+        const responceChose = await axios.get('https://gotovo-test-9f899.firebaseio.com/meals.json');
+        const { categories, name, weight, price } = responceChose.data[id];
+
+        setCategory(categories)
+        setName(name)
+        setWeight(weight)
+        setPrice(price)
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    fetchData();
+  }, []);
 
   // eslint-disable-next-line
   const role = "uploadcare-uploader";
@@ -39,17 +59,15 @@ const MealCreator = () => {
               setName('');
               setWeight('');
               setPrice('');
-              setIsCreate(true);
+              setIsEdit(true);
             })
             .catch(error => console.log(error));
         });
       }
     });
 
-    jwtToken();
-
-    console.log(name);
-    console.log('создаем блюдо');
+    // jwtToken();
+    console.log('редактируем блюдо');
   }, [name, weight, price, category, ref]);
 
   useEffect(() => {
@@ -70,13 +88,13 @@ const MealCreator = () => {
   }, []);
 
   return (
-    <MealCreatorWrapper>
+    <MealEditorWrapper>
       {
-        isCreate ?
+        isEdit ?
           (<Redirect to={"/"} />) :
           (
             <div className="create">
-              <h2>Создание блюда</h2>
+              <h2>Редактирование блюда</h2>
 
               <form className="form-create">
 
@@ -131,14 +149,14 @@ const MealCreator = () => {
                   onClick={createMealHandler}
                   className="btn-create"
                 >
-                  Добавить блюдо
+                  Сохранить изменения
             </button>
               </form>
             </div>
           )
       }
-    </MealCreatorWrapper>
+    </MealEditorWrapper>
   )
 }
 
-export default MealCreator;
+export default MealEditor;

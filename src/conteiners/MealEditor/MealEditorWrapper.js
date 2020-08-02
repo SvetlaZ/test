@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const MealCreatorWrapper = styled.div`
+const MealEditorWrapper = styled.div`
   width: 100%;
   height: 100vh;
   display: flex;
@@ -55,4 +55,4 @@ const MealCreatorWrapper = styled.div`
   }
   `;
 
-export default MealCreatorWrapper;
+export default MealEditorWrapper;
