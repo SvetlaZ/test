@@ -4,17 +4,12 @@ import MealEditorWrapper from './MealEditorWrapper';
 import { Redirect } from 'react-router-dom';
 import * as firebase from 'firebase';
 
-// function isValid(param) {
-//   return param.trim().length >= 3 ? true : false
-// }
-
-
-
 const MealEditor = ({ match: { params: { id } } }) => {
   const [category, setCategory] = useState('breakfast');
   const [name, setName] = useState('');
   const [weight, setWeight] = useState('');
   const [price, setPrice] = useState('');
+  const [photo, setPhoto] = useState('');
   const [isEdit, setIsEdit] = useState(false);
 
   const ref = React.createRef();
@@ -22,53 +17,41 @@ const MealEditor = ({ match: { params: { id } } }) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const id = '-MDfOAVpHst9RSoTi1_X';
         const responceChose = await axios.get('https://gotovo-test-9f899.firebaseio.com/meals.json');
-        const { categories, name, weight, price } = responceChose.data[id];
+        const { categories, name, weight, price, photo } = responceChose.data[id];
 
         setCategory(categories)
         setName(name)
         setWeight(weight)
         setPrice(price)
+        setPhoto(photo)
       } catch (e) {
         console.log(e);
       }
     }
     fetchData();
-  }, []);
+  }, [id]);
 
   // eslint-disable-next-line
   const role = "uploadcare-uploader";
 
-  const createMealHandler = useCallback((event) => {
-    event.preventDefault();
+  const editMealHandler = useCallback((event) => {
+    // event.preventDefault();
 
-    const jwtToken = firebase.auth().onAuthStateChanged(function (user) {
-      if (user) {
-        user.getIdToken().then(function (idToken) {
-          axios.post(`https://gotovo-test-9f899.firebaseio.com/meals.json?auth=${idToken}`, {
-            'categories': JSON.stringify([category]),
-            'name': name,
-            'weight': weight,
-            'price': price,
-            'photo': ref.current.value,
-          })
-            .then(response => {
-              console.log(response);
-              setCategory('breakfast');
-              setName('');
-              setWeight('');
-              setPrice('');
-              setIsEdit(true);
-            })
-            .catch(error => console.log(error));
-        });
-      }
-    });
+    function writeMealData(userId, category, name, weight, price, photo) {
+      firebase.database().ref('meals/' + userId).set({
+        'categories': JSON.stringify([category]),
+        'name': name,
+        'weight': weight,
+        'price': price,
+        'photo': photo,
+      });
+    }
 
-    // jwtToken();
+    writeMealData(id, category, name, weight, price, photo);
+    setIsEdit(true);
     console.log('редактируем блюдо');
-  }, [name, weight, price, category, ref]);
+  }, [id, name, weight, price, category, ref, photo]);
 
   useEffect(() => {
     if (!firebase.apps.length) {
@@ -146,7 +129,7 @@ const MealEditor = ({ match: { params: { id } } }) => {
                 />
 
                 <button
-                  onClick={createMealHandler}
+                  onClick={editMealHandler}
                   className="btn-create"
                 >
                   Сохранить изменения
