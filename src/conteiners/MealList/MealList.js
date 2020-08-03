@@ -1,33 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import Meal from '../Meal/Meal';
 import Title from '../Title/Title';
 import MealListWrapper from './MealListWrapper';
+import * as firebase from 'firebase';
 
 const MealList = () => {
   const [meals, setMeals] = useState([]);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
+    if (!firebase.apps.length) {
+      let firebaseConfig = {
+        apiKey: "AIzaSyBqxC7p9MXNBgFXpSuSUicsMFwhYVZXx6o",
+        authDomain: "gotovo-test-9f899.firebaseapp.com",
+        databaseURL: "https://gotovo-test-9f899.firebaseio.com",
+        projectId: "gotovo-test-9f899",
+        storageBucket: "gotovo-test-9f899.appspot.com",
+        messagingSenderId: "315153781152",
+        appId: "1:315153781152:web:634ce87b79d732a01f94c5"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      firebase.auth().languageCode = 'en';
+    }
+  }, []);
+
+  useEffect(() => {
     async function fetchData() {
       try {
-        const responceMeals = await axios.get('https://gotovo-test-9f899.firebaseio.com/meals.json');
-        const responceCategories = await axios.get('https://gotovo-test-9f899.firebaseio.com/categories.json');
-        const categories = [];
-        for (let category in responceCategories.data) {
+        const responceMeals = await firebase.database().ref('meals').once('value').then(function (snapshot) {
+          return snapshot.val() || [];
+        });
+
+        const responceCategories = await firebase.database().ref('categories').once('value').then(function (snapshot) {
+          return snapshot.val() || [];
+        });
+
+        for (let category in responceCategories) {
           categories.push({
             id: category,
-            ...responceCategories.data[category]
+            ...responceCategories[category]
           })
         }
+
         categories.sort((a, b) => a.order > b.order ? 1 : -1);
         setCategories(categories);
         const meals = [];
-        for (let mealId in responceMeals.data) {
+        for (let mealId in responceMeals) {
           meals.push({
             id: mealId,
-            ...responceMeals.data[mealId]
+            ...responceMeals[mealId]
           })
         }
         setMeals(meals);
