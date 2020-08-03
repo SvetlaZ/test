@@ -34,22 +34,19 @@ const MealCreator = () => {
             'photo': ref.current.value,
           })
             .then(response => {
-              console.log(response);
               setCategory('breakfast');
               setName('');
               setWeight('');
               setPrice('');
               setIsCreate(true);
             })
-            .catch(error => console.log(error));
+            .catch(error => console.error(error));
         });
       }
     });
 
     jwtToken();
 
-    console.log(name);
-    console.log('создаем блюдо');
   }, [name, weight, price, category, ref]);
 
   useEffect(() => {

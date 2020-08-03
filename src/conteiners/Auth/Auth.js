@@ -12,7 +12,6 @@ const Auth = () => {
 
   const getCodeHandler = useCallback((event) => {
     event.preventDefault();
-    console.log('Получить код')
     var appVerifier = window.recaptchaVerifier;
     firebase.auth().signInWithPhoneNumber(tel, appVerifier)
       .then(function (confirmationResult) {
@@ -22,7 +21,7 @@ const Auth = () => {
         setRes(confirmationResult);
         setIsSentPhone(true);
       }).catch(function (error) {
-        console.log(error);
+        console.error(error);
         // grecaptcha.reset(window.recaptchaWidgetId);
       });
   }, [tel]);

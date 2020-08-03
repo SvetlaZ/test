@@ -20,13 +20,13 @@ const MealEditor = ({ match: { params: { id } } }) => {
         const responceChose = await axios.get('https://gotovo-test-9f899.firebaseio.com/meals.json');
         const { categories, name, weight, price, photo } = responceChose.data[id];
 
-        setCategory(categories)
+        setCategory(JSON.parse(categories))
         setName(name)
         setWeight(weight)
         setPrice(price)
         setPhoto(photo)
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     }
     fetchData();
@@ -36,21 +36,20 @@ const MealEditor = ({ match: { params: { id } } }) => {
   const role = "uploadcare-uploader";
 
   const editMealHandler = useCallback((event) => {
-    // event.preventDefault();
+    event.preventDefault();
 
-    function writeMealData(userId, category, name, weight, price, photo) {
-      firebase.database().ref('meals/' + userId).set({
-        'categories': JSON.stringify([category]),
+    async function writeMealData(userId, category, name, weight, price, photo) {
+      await firebase.database().ref('meals/' + userId).set({
+        'categories': JSON.stringify(category),
         'name': name,
         'weight': weight,
         'price': price,
         'photo': photo,
       });
-    }
 
+      setIsEdit(true);
+    }
     writeMealData(id, category, name, weight, price, photo);
-    setIsEdit(true);
-    console.log('редактируем блюдо');
   }, [id, name, weight, price, category, photo]);
 
   useEffect(() => {

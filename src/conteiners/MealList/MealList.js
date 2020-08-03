@@ -14,7 +14,6 @@ const MealList = () => {
       try {
         const responceMeals = await axios.get('https://gotovo-test-9f899.firebaseio.com/meals.json');
         const responceCategories = await axios.get('https://gotovo-test-9f899.firebaseio.com/categories.json');
-        console.log('responceCategories', responceCategories.data)
         const categories = [];
         for (let category in responceCategories.data) {
           categories.push({
@@ -25,17 +24,15 @@ const MealList = () => {
         categories.sort((a, b) => a.order > b.order ? 1 : -1);
         setCategories(categories);
         const meals = [];
-        console.log('resp: ', responceMeals.data)
         for (let mealId in responceMeals.data) {
           meals.push({
             id: mealId,
             ...responceMeals.data[mealId]
           })
         }
-        console.log('meals: ', meals)
         setMeals(meals);
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     }
     fetchData();
