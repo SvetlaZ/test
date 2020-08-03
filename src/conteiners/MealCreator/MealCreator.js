@@ -1,12 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import axios from 'axios';
 import MealCreatorWrapper from './MealCreatorWrapper';
+import Authentication from '../Auth/Authentication';
 import { Redirect } from 'react-router-dom';
 import * as firebase from 'firebase';
-
-// function isValid(param) {
-//   return param.trim().length >= 3 ? true : false
-// }
 
 const MealCreator = () => {
   const [category, setCategory] = useState('breakfast');
@@ -19,52 +15,41 @@ const MealCreator = () => {
 
   // eslint-disable-next-line
   const role = "uploadcare-uploader";
+  useEffect(() => {
+    Authentication();
+  }, []);
 
   const createMealHandler = useCallback((event) => {
     event.preventDefault();
 
     const jwtToken = firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
-        user.getIdToken().then(function (idToken) {
-          axios.post(`https://gotovo-test-9f899.firebaseio.com/meals.json?auth=${idToken}`, {
-            'categories': JSON.stringify([category]),
+        console.dir(ref);
+        async function writeMealData(category, name, weight, price, photo) {
+          const mealData = {
+            'categories': JSON.stringify(category),
             'name': name,
             'weight': weight,
             'price': price,
-            'photo': ref.current.value,
-          })
-            .then(response => {
-              setCategory('breakfast');
-              setName('');
-              setWeight('');
-              setPrice('');
-              setIsCreate(true);
-            })
-            .catch(error => console.error(error));
-        });
+            'photo': photo,
+          };
+
+          const newMealKey = firebase.database().ref().child('meals').push().key;
+          let updates = {};
+
+          updates['/meals/' + newMealKey] = mealData;
+
+          firebase.database().ref().update(updates);
+
+          setIsCreate(true);
+        }
+
+        writeMealData(category, name, weight, price, ref.current.value);
       }
     });
 
     jwtToken();
-
   }, [name, weight, price, category, ref]);
-
-  useEffect(() => {
-    if (!firebase.apps.length) {
-      let firebaseConfig = {
-        apiKey: "AIzaSyBqxC7p9MXNBgFXpSuSUicsMFwhYVZXx6o",
-        authDomain: "gotovo-test-9f899.firebaseapp.com",
-        databaseURL: "https://gotovo-test-9f899.firebaseio.com",
-        projectId: "gotovo-test-9f899",
-        storageBucket: "gotovo-test-9f899.appspot.com",
-        messagingSenderId: "315153781152",
-        appId: "1:315153781152:web:634ce87b79d732a01f94c5"
-      };
-
-      firebase.initializeApp(firebaseConfig);
-      firebase.auth().languageCode = 'en';
-    }
-  }, []);
 
   return (
     <MealCreatorWrapper>
