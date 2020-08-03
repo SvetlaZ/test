@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import axios from 'axios';
 import MealEditorWrapper from './MealEditorWrapper';
 import { Redirect } from 'react-router-dom';
 import * as firebase from 'firebase';
@@ -15,10 +14,28 @@ const MealEditor = ({ match: { params: { id } } }) => {
   const ref = React.createRef();
 
   useEffect(() => {
+    if (!firebase.apps.length) {
+      let firebaseConfig = {
+        apiKey: "AIzaSyBqxC7p9MXNBgFXpSuSUicsMFwhYVZXx6o",
+        authDomain: "gotovo-test-9f899.firebaseapp.com",
+        databaseURL: "https://gotovo-test-9f899.firebaseio.com",
+        projectId: "gotovo-test-9f899",
+        storageBucket: "gotovo-test-9f899.appspot.com",
+        messagingSenderId: "315153781152",
+        appId: "1:315153781152:web:634ce87b79d732a01f94c5"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      firebase.auth().languageCode = 'en';
+    }
+  }, []);
+
+  useEffect(() => {
     async function fetchData() {
       try {
-        const responceChose = await axios.get('https://gotovo-test-9f899.firebaseio.com/meals.json');
-        const { categories, name, weight, price, photo } = responceChose.data[id];
+        const { categories, name, weight, price, photo } = await firebase.database().ref('meals/' + id).once('value').then(function (snapshot) {
+          return snapshot.val() || [];
+        });
 
         setCategory(JSON.parse(categories))
         setName(name)
@@ -38,8 +55,8 @@ const MealEditor = ({ match: { params: { id } } }) => {
   const editMealHandler = useCallback((event) => {
     event.preventDefault();
 
-    async function writeMealData(userId, category, name, weight, price, photo) {
-      await firebase.database().ref('meals/' + userId).set({
+    async function writeMealData(mealId, category, name, weight, price, photo) {
+      await firebase.database().ref('meals/' + mealId).set({
         'categories': JSON.stringify(category),
         'name': name,
         'weight': weight,
@@ -51,23 +68,6 @@ const MealEditor = ({ match: { params: { id } } }) => {
     }
     writeMealData(id, category, name, weight, price, photo);
   }, [id, name, weight, price, category, photo]);
-
-  useEffect(() => {
-    if (!firebase.apps.length) {
-      let firebaseConfig = {
-        apiKey: "AIzaSyBqxC7p9MXNBgFXpSuSUicsMFwhYVZXx6o",
-        authDomain: "gotovo-test-9f899.firebaseapp.com",
-        databaseURL: "https://gotovo-test-9f899.firebaseio.com",
-        projectId: "gotovo-test-9f899",
-        storageBucket: "gotovo-test-9f899.appspot.com",
-        messagingSenderId: "315153781152",
-        appId: "1:315153781152:web:634ce87b79d732a01f94c5"
-      };
-
-      firebase.initializeApp(firebaseConfig);
-      firebase.auth().languageCode = 'en';
-    }
-  }, []);
 
   return (
     <MealEditorWrapper>
