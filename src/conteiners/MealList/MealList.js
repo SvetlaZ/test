@@ -47,7 +47,7 @@ const MealList = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [categories]);
 
   return (
     <MealListWrapper>
