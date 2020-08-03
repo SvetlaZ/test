@@ -51,7 +51,7 @@ const MealEditor = ({ match: { params: { id } } }) => {
     writeMealData(id, category, name, weight, price, photo);
     setIsEdit(true);
     console.log('редактируем блюдо');
-  }, [id, name, weight, price, category, ref, photo]);
+  }, [id, name, weight, price, category, photo]);
 
   useEffect(() => {
     if (!firebase.apps.length) {

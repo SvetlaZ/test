@@ -38,6 +38,7 @@ const MealEditorWrapper = styled.div`
     border-radius: 7px;
     padding-left: 10px;
     border: 1px solid #cecece;
+    font-size: 16px;
   }
 
   .btn-create {
