@@ -55,7 +55,7 @@ const MealList = () => {
         localStorage.getItem('userId')
           ?
           <div className="doWrap">
-            <p>Добавте свое блюдо</p>
+            <p>Добавьте свое блюдо</p>
             <Link
               to="/create"
             >
