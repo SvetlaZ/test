@@ -20,6 +20,7 @@ const MealWrapper = styled.div`
   
   .pencil:hover {
     cursor: pointer;
+    filter: drop-shadow(0 0.5rem 0.25rem rgba(0, 0, 0, 0.5))
   }
       
 
